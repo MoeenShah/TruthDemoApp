@@ -260,9 +260,7 @@ android {
 }
 
 dependencies {
-    implementation fileTree(dir: "libs", include: ["*.jar"])
-
-    implementation ('com.github.lociiinnovation:passport-nfc-android-sdk-pub:1.0.0@aar'){transitive=true}
+    implementation fileTree(dir: "libs", include: ["*.jar", "*.aar"])
 
     //noinspection GradleDynamicVersion
     implementation "com.facebook.react:react-native:+"  // From node_modules

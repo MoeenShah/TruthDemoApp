@@ -7,10 +7,12 @@ import android.widget.Toast;
 import com.facebook.react.bridge.ReactApplicationContext;
 import com.facebook.react.bridge.ReactContextBaseJavaModule;
 import com.facebook.react.bridge.ReactMethod;
+import com.facebook.react.bridge.Promise;
 import java.util.Map;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
 
+import android.app.Activity;
 import id.truuth.passportreader.EPassport;
 
 public class TruthNFCModule extends ReactContextBaseJavaModule  {
@@ -20,11 +22,6 @@ public class TruthNFCModule extends ReactContextBaseJavaModule  {
 
 
     //    @Override
-    protected void onResume() {
-        super.onResume();
-        EPassport.Companion.initialize(this);
-    }
-
 
     @Override
     public String getName() {
@@ -32,15 +29,21 @@ public class TruthNFCModule extends ReactContextBaseJavaModule  {
     }
 
     @ReactMethod
-    public boolean checkIsSupported(String dob, String expiryDate, String passportNumber) {
-        boolean isSupported = EPassport.Companion.isNFCSupported();
-        return isSupported;
+    public void initialize() {
+        Activity currentActivity = getCurrentActivity();
+        EPassport.Companion.initialize(currentActivity);
     }
 
     @ReactMethod
-    public boolean checkIsEnabled(String dob, String expiryDate, String passportNumber) {
+    public void checkIsSupported(final Promise result) {
+        boolean isSupported = EPassport.Companion.isNFCSupported();
+        result.resolve(isSupported);
+    }
+
+    @ReactMethod
+    public void checkIsEnabled(final Promise result) {
         boolean isEnabled = EPassport.Companion.isNFCEnabled();
-        return isEnabled;
+        result.resolve(isEnabled);
     }
 
     @ReactMethod

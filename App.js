@@ -14,34 +14,21 @@ import {
 
 const App = () => {
   const {TruthNFCModule} = NativeModules;
-  const [dob, setDob] = useState('');
-  const [expiryDate, setExpiryDate] = useState('');
-  const [passportNumber, setPassportNumber] = useState('');
+//  const [dob, setDob] = useState('');
+//  const [expiryDate, setExpiryDate] = useState('');
+//  const [passportNumber, setPassportNumber] = useState('');
   return (
     <SafeAreaView
       style={{flex: 1, justifyContent: 'center', alignItems: 'center'}}>
       <TextInput
         placeholder="Date of birth"
         style={styles.input}
-        onChangeText={setDob}
-        value={dob}
-      />
-      <TextInput
-        placeholder="Date of expiry"
-        style={styles.input}
-        onChangeText={setExpiryDate}
-        value={expiryDate}
-      />
-      <TextInput
-        placeholder="Passport number"
-        style={styles.input}
-        onChangeText={setPassportNumber}
-        value={setPassportNumber}
       />
       <TouchableOpacity
         style={styles.input}
-        onPress={() => {
-          TruthNFCModule.scanPassport(dob, expiryDate, passportNumber); // dob,expiry,passportnumber
+        onPress={ async () => {
+            await TruthNFCModule.initialize();
+            console.log(await TruthNFCModule.checkIsEnabled());
         }}>
         <Text>Press to SCAN</Text>
       </TouchableOpacity>
