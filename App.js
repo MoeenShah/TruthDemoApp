@@ -14,21 +14,25 @@ import {
 
 const App = () => {
   const {TruthNFCModule} = NativeModules;
-//  const [dob, setDob] = useState('');
-//  const [expiryDate, setExpiryDate] = useState('');
-//  const [passportNumber, setPassportNumber] = useState('');
+
+  const nfcRequiredData = {
+    dob: new Date(),
+    expiryDate: new Date(),
+    documentNumber: 'AB1234567',
+  };
+
   return (
     <SafeAreaView
       style={{flex: 1, justifyContent: 'center', alignItems: 'center'}}>
-      <TextInput
-        placeholder="Date of birth"
-        style={styles.input}
-      />
       <TouchableOpacity
         style={styles.input}
-        onPress={ async () => {
-            await TruthNFCModule.initialize();
-            console.log(await TruthNFCModule.checkIsEnabled());
+        onPress={async () => {
+          await TruthNFCModule.initialize();
+          await TruthNFCModule.scanPassport(
+            nfcRequiredData?.dob,
+            nfcRequiredData?.expiryDate,
+            nfcRequiredData?.documentNumber,
+          );
         }}>
         <Text>Press to SCAN</Text>
       </TouchableOpacity>
