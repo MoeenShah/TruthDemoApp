@@ -12,6 +12,7 @@ import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
 import android.app.Activity;
 
+
 import id.truuth.passportreader.EPassport;
 
 public class TruthNFCModule extends ReactContextBaseJavaModule  {
@@ -26,8 +27,10 @@ public class TruthNFCModule extends ReactContextBaseJavaModule  {
 
     @ReactMethod
     public void initialize() {
+        //make sure currentActivity is not null when you call initialize function.
+        // Please check if it is the best way getting activity object.
         Activity currentActivity = getCurrentActivity();
-        EPassport.Companion.initialize(currentActivity);
+        if(currentActivity != null) EPassport.Companion.initialize(currentActivity);
     }
 
     @ReactMethod
@@ -43,51 +46,29 @@ public class TruthNFCModule extends ReactContextBaseJavaModule  {
     }
 
     @ReactMethod
-    public void scanPassport(String dob, String expiryDate, String passportNumber) {
-//       Log.d("TruthNFCModule",   passportNumber
-//               + " and dates: " + dob + expiryDate + "Data received on android native side");
-       AsyncTaskRunner runner = new AsyncTaskRunner();
-       runner.execute(passportNumber, dob, expiryDate);
+    public void scanPassport(final String passportNumber, final String dob, final String doe, final Promise result) {
+        new AsyncTask<String, Void, Map<String, String>>() {
+            @Override
+            protected Map<String, String> doInBackground(String... params) {
+                String passportNumber, dob, doe;
+                passportNumber = params[0];
+                dob = params[1];
+                doe = params[2];
+                CompletableFuture<Map<String, String>> result = EPassport.Companion.readFromJava(passportNumber, dob, doe);
+                try {
+                    return result.get();
+                } catch (ExecutionException e) {
+                    throw new RuntimeException(e);
+                } catch (InterruptedException e) {
+                    throw new RuntimeException(e);
+                }
+            }
+            @Override
+            protected void onPostExecute(Map<String, String> data) {
+                result.resolve(String.valueOf(data));
+            }
+        }.execute(passportNumber, dob, doe);
     }
-
-
-   private class AsyncTaskRunner extends AsyncTask<String, Void, Map<String, String>> {
-
-       @Override
-       protected Map<String, String> doInBackground(String... params) {
-           String passportNumber, dob, doe;
-           passportNumber=params[0];
-           dob=params[1];
-           doe=params[2];
-           CompletableFuture<Map<String, String>> result =  EPassport.Companion.readFromJava(passportNumber, dob, doe);
-           try {
-               return result.get();
-           } catch (ExecutionException e) {
-               throw new RuntimeException(e);
-           } catch (InterruptedException e) {
-               throw new RuntimeException(e);
-           }
-       }
-
-
-       @Override
-       protected void onPostExecute(Map<String, String> passportData) {
-           if(passportData == null) {
-//               Log.d("TruthNFCModuleResult", "Data not found.");
-           }
-           else if (passportData.get("error") != null) {
-//               Log.d("TruthNFCModuleResult", passportData.get("error").toString());
-           }
-           else{
-//               Log.d("TruthNFCModuleResult", String.valueOf(passportData));
-           }
-       }
-
-
-       @Override
-       protected void onPreExecute() {
-       }
-   }
 }
 
 

@@ -28,11 +28,8 @@ const App = () => {
         style={styles.input}
         onPress={async () => {
           await TruthNFCModule.initialize();
-          await TruthNFCModule.scanPassport(
-            nfcRequiredData?.dob,
-            nfcRequiredData?.expiryDate,
-            nfcRequiredData?.documentNumber,
-          );
+          var data = await TruthNFCModule.scanPassport("AB1234567","820801","320712");
+          console.log(data);
         }}>
         <Text>Press to SCAN</Text>
       </TouchableOpacity>
